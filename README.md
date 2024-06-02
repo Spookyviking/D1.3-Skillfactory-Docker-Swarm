@@ -1,4 +1,4 @@
-# D1.3-Skillfactory-Docker-Swarm
+# Skillfactory-Docker-Swarm
 
 1. Подготовить аккаунт в Yandex.Cloud.
 2. Создать три инстанса в Yandex.Cloud:
