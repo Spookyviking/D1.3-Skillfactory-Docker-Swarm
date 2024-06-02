@@ -1,4 +1,3 @@
-
 resource "null_resource" "docker-swarm-manager" {
   count = var.managers
   depends_on = [yandex_compute_instance.vm-manager]
@@ -9,8 +8,8 @@ resource "null_resource" "docker-swarm-manager" {
   }
 
   provisioner "file" {
-    source      = "../../../docker-compose/docker-compose-v3.yml"
-    destination = "~/docker-compose.yml"
+    source      = "./docker-compose.yml"
+    destination = "/home/ubuntu/docker-compose.yml"
   }
 
   provisioner "remote-exec" {
@@ -20,6 +19,7 @@ resource "null_resource" "docker-swarm-manager" {
       "sudo apt install -y docker-compose",
       "sudo docker swarm init",
       "sleep 10",
+      "echo 0",
       "echo COMPLETED"
     ]
   }
@@ -50,15 +50,39 @@ resource "null_resource" "docker-swarm-worker" {
 
   provisioner "file" {
     source      = "join.sh"
-    destination = "~/join.sh"
+    destination = "/home/ubuntu/join.sh"
   }
 
   provisioner "remote-exec" {
     inline = [
       "curl -fsSL https://get.docker.com | sh",
       "sudo usermod -aG docker $USER",
-      "chmod +x ~/join.sh",
-      "~/join.sh"
+      "chmod +x /home/ubuntu/join.sh",
+      "/home/ubuntu/join.sh"
+    ]
+  }
+}
+
+resource "null_resource" "docker-swarm-worker-another" {
+  count = var.workers
+  depends_on = [yandex_compute_instance.vm-worker-another, null_resource.docker-swarm-manager-join]
+  connection {
+    user        = var.ssh_credentials.user
+    private_key = file(var.ssh_credentials.private_key)
+    host        = yandex_compute_instance.vm-worker-another[count.index].network_interface.0.nat_ip_address
+  }
+
+  provisioner "file" {
+    source      = "join.sh"
+    destination = "/home/ubuntu/join.sh"
+  }
+
+  provisioner "remote-exec" {
+    inline = [
+      "curl -fsSL https://get.docker.com | sh",
+      "sudo usermod -aG docker $USER",
+      "chmod +x /home/ubuntu/join.sh",
+      "/home/ubuntu/join.sh"
     ]
   }
 }
@@ -71,9 +95,14 @@ resource "null_resource" "docker-swarm-manager-start" {
     host        = yandex_compute_instance.vm-manager[0].network_interface.0.nat_ip_address
   }
 
+  provisioner "file" {
+    source      = "docker-compose.yml"
+    destination = "/home/ubuntu/docker-compose.yml"
+  }
+
   provisioner "remote-exec" {
     inline = [
-        "docker stack deploy --compose-file ~/docker-compose.yml sockshop-swarm"
+        "docker stack deploy --compose-file /home/ubuntu/docker-compose.yml sockshop-swarm"
     ]
   }
 

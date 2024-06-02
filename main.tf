@@ -7,10 +7,10 @@ terraform {
   }
 }
 provider "yandex" {
-  token     = "./key.json"
-  cloud_id  = "<yours cloud_id>"
-  folder_id = "<yours folder_id>"
-  zone      = "ru-central1-a"
+  service_account_key_file = "./key.json"
+  cloud_id                 = "<cloud-id>"
+  folder_id                = "<folder-id>"
+  zone                     = "ru-central1-a"
 }
 
 resource "yandex_vpc_network" "network" {
