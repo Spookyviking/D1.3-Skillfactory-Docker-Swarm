@@ -1,4 +1,4 @@
-version: '2'
+version: '3'
 
 services:
   front-end:
@@ -8,8 +8,6 @@ services:
     cap_drop:
       - all
     read_only: true
-    deploy:
-      replicas: 2
   edge-router:
     image: weaveworksdemos/edge-router:0.1.1
     ports:
