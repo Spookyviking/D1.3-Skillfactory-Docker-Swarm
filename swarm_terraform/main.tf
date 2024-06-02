@@ -28,21 +28,21 @@ resource "yandex_vpc_subnet" "subnet_1" {
 
 module "manager" {
   source                = "./modules"
-  name_node             = "manager"  
+  name_node             = "swarm-mgmt001"  
   vpc_subnet_id         = yandex_vpc_subnet.subnet_1.id
   vpc_ip_address        = "192.168.10.10"
 }
 
 module "worker-1" {
   source                = "./modules"
-  name_node             = "worker-01"
+  name_node             = "swarm-worker001"
   vpc_subnet_id         = yandex_vpc_subnet.subnet_1.id
   vpc_ip_address        = "192.168.10.11"
 }
 
 module "worker-2" {
   source                = "./modules"
-  name_node             = "worker-02"
+  name_node             = "swarm-worker002"
   vpc_subnet_id         = yandex_vpc_subnet.subnet_1.id
   vpc_ip_address        = "192.168.10.12"
 }
